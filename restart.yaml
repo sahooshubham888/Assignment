@@ -1,0 +1,17 @@
+---
+- hosts: tomcat_servers
+  become: true
+  tasks:
+    - name: Restart Tomcat if war file changed
+      shell: ps aux | grep tomcat8 | grep -v grep
+      register: tomcat_status
+      ignore_errors: true
+
+    - name: Print top 10 running processes
+      command: ps aux --sort=-%mem | head -n 11
+      register: top_processes
+      changed_when: false
+
+    - debug:
+        msg: "Tomcat is running"
+      when: tomcat_status.stdout | length > 0
