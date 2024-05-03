@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install MySQL, Tomcat, Memcached, Redis
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - mysql-server
+        - tomcat8
+        - memcached
+        - redis-server
+
+    - name: Deploy sample war file
+      copy:
+        src: "/home/sbm/Assignment/Q.NO.1/sample.war"  # <-- Replace this with the actual path to your WAR file
+        dest: "/var/lib/tomcat8/webapps/sample.war"
+      notify: restart tomcat
+
+  handlers:
+    - name: restart tomcat
+      service:
+        name: tomcat8
+        state: restarted
